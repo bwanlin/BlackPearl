@@ -1,5 +1,7 @@
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
+const prisma = new PrismaClient()
 export async function GET(request: Request) {
     return Response.json({ message: "Hello !"});
 }
@@ -16,6 +18,15 @@ export async function POST(request: Request, response: Response) {
     if (mt === null)
         return NextResponse.json({ message: "Ceci n'est pas un lien youtube" }, { status: 400 })
     // create
-    
-    return NextResponse.json({ message: "ok" }, { status: 200 });
+    try {
+        const created = await prisma.ytlink.create({
+            data: {
+                url: data.yt_link
+            }
+        })
+        return NextResponse.json({ message: "ok", id: created.id }, { status: 200 });
+    } catch(err) {
+        return NextResponse.json({ message: "failed to create url from yt_link" }, { status: 500 });
+    }
+
 }
