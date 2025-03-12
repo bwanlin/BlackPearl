@@ -2,12 +2,20 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient()
-export async function GET(request: Request) {
-    return Response.json({ message: "Hello !"});
-}
 
 interface IYt_link {
     yt_link: string
+}
+
+export async function GET(_request: Request) {
+    // faire des trucs avec le header peut etre genre verifier la presence d'un token
+    // ce renseigner sur les sessions
+    try {
+        const data = await prisma.ytlink.findMany()
+        return Response.json({ message: "ok", data: data }, { status: 200 });
+    } catch(err) {
+        return Response.json({ message: "error findmany youtube" }, { status: 500 });
+    }
 }
 
 export async function POST(request: Request, response: Response) {
